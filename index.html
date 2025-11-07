@@ -607,6 +607,7 @@ justify-content: center;
 cursor: pointer;
 transition: all 0.2s;
 backdrop-filter: blur(5px);
+padding: 6px;
 }
 
 .om-image-btn:hover {
@@ -1182,6 +1183,99 @@ text-align: center;
 color: var(--color-primary);
 }
 
+.tools-panel {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999; 
+            
+            background: rgba(var(--color-dark-rgb), 0.7); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(var(--color-dark-rgb), 0.2); 
+            border-radius: 16px;
+            padding: 0.75rem 1.5rem;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            
+            display: flex; /* JAVÍTVA: A 'flex' marad, a láthatóságot máshogy kezeljük */
+            align-items: center;
+            gap: 1rem;
+            color: var(--color-secondary);
+            font-weight: 600;
+            font-size: 0.875rem;
+            
+            /* --- ANIMÁCIÓ HOZZÁADVA --- */
+            opacity: 0; 
+            visibility: hidden; 
+            transition: opacity 0.3s ease, visibility 0.3s ease, bottom 0.3s ease;
+            bottom: -100px; /* Alapból "lecsúszva" */
+        }
+
+        /* Új "visible" osztály a megjelenítéshez */
+        .tools-panel.visible {
+            opacity: 1;
+            visibility: visible;
+            bottom: 1.5rem; /* Felcsúszik a helyére */
+        }
+
+        .tools-panel label {
+            opacity: 0.7;
+        }
+
+        .tools-panel input[type="color"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 32px;
+            height: 32px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(var(--color-secondary-rgb), 0.1);
+        }
+        .tools-panel input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        .tools-panel input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
+        .tools-panel input[type="color"]::-moz-color-swatch { border: none; border-radius: 50%; }
+
+        .tools-panel-btn {
+            background: rgba(var(--color-secondary-rgb), 0.1);
+            color: var(--color-secondary);
+            border: 1px solid transparent;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tools-panel-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        .tools-panel-btn:hover {
+            border-color: var(--color-primary);
+        }
+        .tools-panel-btn.active {
+            background: var(--color-primary);
+            color: var(--color-dark);
+            border-color: var(--color-primary);
+        }
+
+        /* === Szerkeszthető Szöveg Stílus === */
+        body.edit-mode-active [data-placeholder]:not(img):not(.om-timer) {
+            outline: 2px dashed rgba(var(--color-primary-rgb), 0.7);
+            outline-offset: 3px;
+            cursor: text;
+        }
+        body.edit-mode-active [data-placeholder]:hover {
+             background: rgba(var(--color-primary-rgb), 0.1);
+        }
+
 </style>
 </head>
 <body>
@@ -1195,8 +1289,8 @@ color: var(--color-primary);
 <h1 data-placeholder="heroTitle"></h1>
 <p data-placeholder="heroSubtitle"></p>
 <div class="hero-buttons">
-<a href="https://app.optimonk.com/register/en" class="btn btn-primary">
-<span>Ich probiere es kostenlos aus</span>
+<a href="#" class="btn btn-primary">
+<span>Kipróbálom ingyen</span>
 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
 </svg>
@@ -1208,7 +1302,7 @@ color: var(--color-primary);
 
 <section class="logo-cloud-section">
 <div class="container">
-<h2 class="logo-cloud-header">Über 30.000 Onlineshops vertrauen auf OptiMonk, darunter:</h2>
+<h2 class="logo-cloud-header">Több mint 30.000 webshop bízik az OptiMonkban, köztük:</h2>
 <div class="logo-cloud-container">
 <img src="https://optimonk.hu/wp-content/uploads/fooldal_hero_logos_avon_3.svg" alt="Partner Logó">
 <img src="https://optimonk.hu/wp-content/uploads/fooldal_hero_logos_biotech_3.svg" alt="Partner Logó">
@@ -1260,7 +1354,7 @@ color: var(--color-primary);
 <section>
 <div class="container">
 <div class="section-header scroll-reveal">
-<span class="section-label">Lösungen</span>
+<span class="section-label">Megoldások</span>
 <h2 class="section-title" data-placeholder="solutionsTitle"></h2>
 <p class="section-description" data-placeholder="solutionsSubtitle"></p>
 </div>
@@ -1326,24 +1420,24 @@ color: var(--color-primary);
 <section>
 <div class="container">
 <div class="section-header scroll-reveal">
-<span class="section-label">Der Ablauf</span>
-<h2 class="section-title">Los geht’s in 3 einfachen Schritten.</h2>
+<span class="section-label">A Folyamat</span>
+<h2 class="section-title">Kezdd el 3 egyszerű lépésben</h2>
 </div>
 <div class="how-it-works-grid">
 <div class="glass-card step-card scroll-reveal">
 <div class="step-number">1.</div>
-<h3>Wähle eine Vorlage</h3>
-<p>Du kannst aus Hunderten branchenspezifischen und bewährten Vorlagen wählen, damit du nicht bei null anfangen musst.</p>
+<h3>Válassz egy sablont</h3>
+<p>Több száz, iparág-specifikus és bizonyítottan működő sablon közül választhatsz, hogy ne a nulláról kelljen kezdened.</p>
 </div>
 <div class="glass-card step-card scroll-reveal">
 <div class="step-number">2.</div>
-<h3>Personalisierungs</h3>
-<p>Lege in nur wenigen Minuten mit unserem Drag-and-Drop-Editor deine Zielregeln fest (z. B. Exit-Intent, Warenkorbwert, geografischer Standort).</p>
+<h3>Személyre szabás</h3>
+<p>Állítsd be a célzási szabályokat (pl. exit-intent, kosárérték, földrajzi hely) percek alatt a drag-and-drop szerkesztőnkkel.</p>
 </div>
 <div class="glass-card step-card scroll-reveal">
 <div class="step-number">3.</div>
-<h3>Integration und Messung</h3>
-<p data-placeholder="step3Text">OptiMonk lässt sich nahtlos mit deinen bevorzugten Marketing-Tools integrieren und synchronisiert die Daten automatisch, damit du deine Ergebnisse genau messen kannst.</p>
+<h3>Integráció és mérés</h3>
+<p data-placeholder="step3Text"></p>
 </div>
 </div>
 </div>
@@ -1352,27 +1446,29 @@ color: var(--color-primary);
 <section>
 <div class="container">
 <div class="section-header scroll-reveal">
-<span class="section-label">Das sagen sie über uns</span>
-<h2 class="section-title">Echte Ergebnisse von echten Partnern</h2>
+<span class="section-label">Ezt mondták rólunk</span>
+<h2 class="section-title">Valódi eredmények, valódi partnerektől</h2>
 </div>
 <div class="testimonial-grid">
 <div class="glass-card testimonial-card scroll-reveal">
-<p class="testimonial-text">"I’m a massive fan of OptiMonk and I’ve  been a user of them for 5 years now and there is absolutely no one else I would choose to use."</p>
+<p class="testimonial-text">"Az OptiMonk bevezetése óta 22%-kal csökkent a kosárelhagyásunk. Az exit-intent kampányok valósággal megmentik az elveszettnek hitt rendeléseket."</p>
 <div class="testimonial-author-wrapper">
-<cite>Jason K Williamson <span>– E2 Agency</span></cite>
+<img src="https://thispersondoesnotexist.com/" alt="Ügyfél fotó">
+<cite>Kovács Anna <span>Marketing Vezető, Webshop.hu</span></cite>
 </div>
 </div>
 <div class="glass-card testimonial-card scroll-reveal">
-<p class="testimonial-text">“We’ve been seeing a lot of good results on our business. First and foremost higher conversion rate combined with increased revenues as well.”</p>
+<p class="testimonial-text">"Egy hónap alatt több feliratkozót gyűjtöttünk, mint előtte fél év alatt. Az AI-alapú termékajánló popupok pedig 15%-kal növelték az átlagos kosárértéket."</p>
 <div class="testimonial-author-wrapper">
-
-<cite>Laura Arnesen <span>– Christopher Cloos</span></cite>
+<img src="https://thispersondoesnotexist.com/" alt="Ügyfél fotó">
+<cite>Nagy Gábor <span>E-commerce Manager, DivatBolt</span></cite>
 </div>
 </div>
 <div class="glass-card testimonial-card scroll-reveal">
-<p class="testimonial-text">“The team has been fantastic in helping  us find all those little areas on our site to get those extra conversions, stuff that we have never thought about would make  a big impact.”</p>
+<p class="testimonial-text">"Először féltünk, hogy a popupok zavarni fogják a látogatókat, de az ellenkezője történt. A célzott, releváns üzenetekkel javult a felhasználói élmény."</p>
 <div class="testimonial-author-wrapper">
-<cite>Matt Edmundson <span>– Vegetology</span></cite>
+<img src="https://thispersondoesnotexist.com/" alt="Ügyfél fotó">
+<cite>Tóth Éva <span>Tulajdonos, KiegészítőKuckó</span></cite>
 </div>
 </div>
 </div>
@@ -1382,8 +1478,8 @@ color: var(--color-primary);
 <section>
 <div class="container">
 <div class="section-header scroll-reveal">
-<span class="section-label">Ergebnisse</span>
-<h2 class="section-title">Nachgewiesenes Wachstum</h2>
+<span class="section-label">Eredmények</span>
+<h2 class="section-title">Bizonyított növekedés</h2>
 </div>
 <div class="stats-grid">
 <div class="glass-card stat-card scroll-reveal">
@@ -1392,11 +1488,11 @@ color: var(--color-primary);
 </div>
 <div class="glass-card stat-card scroll-reveal">
 <div class="stat-number">12%</div>
-<div class="stat-label">Durchschnittliche Steigerung der Conversionrate</div>
+<div class="stat-label">Átlagos konverziónövekedés</div>
 </div>
 <div class="glass-card stat-card scroll-reveal">
 <div class="stat-number">+40%</div>
-<div class="stat-label">Mehr wiederkehrende Käufer</div>
+<div class="stat-label">Több visszatérő vásárló</div>
 </div>
 </div>
 </div>
@@ -1406,7 +1502,7 @@ color: var(--color-primary);
 <div class="cta-content scroll-reveal">
 <h2 data-placeholder="ctaTitle"></h2>
 <p data-placeholder="ctaSubtitle"></p>
-<a href="https://app.optimonk.com/register/en" class="btn btn-primary">Probiere es kostenlos aus</a>
+<a href="#" class="btn btn-primary">Próbáld ki ingyen</a>
 </div>
 </section>
 
@@ -1419,7 +1515,7 @@ color: var(--color-primary);
 <div class="om-brand" data-placeholder="brandLogoHTML"></div>
 <div class="om-title" data-placeholder="popup1Title"></div>
 <div class="om-text" data-placeholder="popup1Text"></div>
-<input type="email" class="om-input" placeholder="Gib deine E-Mail-Adresse ein">
+<input type="email" class="om-input" placeholder="Add meg az e-mail címed">
 <button class="om-button" data-placeholder="popup1Button"></button>
 </div>
 <div class="om-right">
@@ -1427,9 +1523,28 @@ color: var(--color-primary);
 <img data-placeholder="popup1Image" id="popupImage_1" src="..." alt="Popup kép" class="om-product-img">
 </div>
 <div class="om-image-controls">
-<button class="om-image-btn om-toggle-fit" data-popup-id="1" title="Váltás 'Kitöltés'/'Teljes kép' között">⛶</button>
-<button class="om-image-btn om-cycle-pos" data-popup-id="1" title="Kép pozíciójának váltása">✥</button>
-<button class="om-image-btn om-image-swap-btn" data-popup-id="1" title="Kép cseréje">⟳</button>
+                        <button class="om-image-btn om-toggle-fit" data-popup-id="1" title="Váltás 'Kitöltés'/'Teljes kép' között">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75v4.5m0-4.5h-4.5m4.5 0L15 9M20.25 20.25v-4.5m0 4.5h-4.5m4.5 0L15 15" />
+                            </svg>
+                        </button>
+                        <button class="om-image-btn om-pan-left" data-popup-id="1" title="Balra mozgatás">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                            </svg>
+                        </button>
+                        <button class="om-image-btn om-pan-right" data-popup-id="1" title="Jobbra mozgatás">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg>
+                        </button>
+                        <button class="om-image-btn om-image-swap-btn" data-popup-id="1" title="Kép cseréje">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                            </svg>
+                        </button>
+                    </div>
+
 </div>
 </div>
 </div>
@@ -1453,9 +1568,28 @@ color: var(--color-primary);
 <img data-placeholder="popup2Image" id="popupImage_2" src="..." alt="Popup kép" class="om-product-img">
 </div>
 <div class="om-image-controls">
-<button class="om-image-btn om-toggle-fit" data-popup-id="2" title="Váltás 'Kitöltés'/'Teljes kép' között">⛶</button>
-<button class="om-image-btn om-cycle-pos" data-popup-id="2" title="Kép pozíciójának váltása">✥</button>
-<button class="om-image-btn om-image-swap-btn" data-popup-id="2" title="Kép cseréje">⟳</button>
+                        <button class="om-image-btn om-toggle-fit" data-popup-id="2" title="Váltás 'Kitöltés'/'Teljes kép' között">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75v4.5m0-4.5h-4.5m4.5 0L15 9M20.25 20.25v-4.5m0 4.5h-4.5m4.5 0L15 15" />
+                            </svg>
+                        </button>
+                        <button class="om-image-btn om-pan-left" data-popup-id="2" title="Balra mozgatás">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                            </svg>
+                        </button>
+                        <button class="om-image-btn om-pan-right" data-popup-id="2" title="Jobbra mozgatás">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg>
+                        </button>
+                        <button class="om-image-btn om-image-swap-btn" data-popup-id="2" title="Kép cseréje">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                            </svg>
+                        </button>
+                    </div>
+
 </div>
 </div>
 </div>
@@ -1479,9 +1613,28 @@ color: var(--color-primary);
 <img data-placeholder="popup3Image" id="popupImage_3" src="..." alt="Popup kép" class="om-product-img">
 </div>
 <div class="om-image-controls">
-<button class="om-image-btn om-toggle-fit" data-popup-id="3" title="Váltás 'Kitöltés'/'Teljes kép' között">⛶</button>
-<button class="om-image-btn om-cycle-pos" data-popup-id="3" title="Kép pozíciójának váltása">✥</button>
-<button class="om-image-btn om-image-swap-btn" data-popup-id="3" title="Kép cseréje">⟳</button>
+                        <button class="om-image-btn om-toggle-fit" data-popup-id="3" title="Váltás 'Kitöltés'/'Teljes kép' között">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75v4.5m0-4.5h-4.5m4.5 0L15 9M20.25 20.25v-4.5m0 4.5h-4.5m4.5 0L15 15" />
+                            </svg>
+                        </button>
+                        <button class="om-image-btn om-pan-left" data-popup-id="3" title="Balra mozgatás">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                            </svg>
+                        </button>
+                        <button class="om-image-btn om-pan-right" data-popup-id="3" title="Jobbra mozgatás">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                            </svg>
+                        </button>
+                        <button class="om-image-btn om-image-swap-btn" data-popup-id="3" title="Kép cseréje">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                            </svg>
+                        </button>
+                    </div>
+
 </div>
 </div>
 </div>
@@ -1519,9 +1672,9 @@ color: var(--color-primary);
 <div class="om-brand" data-placeholder="brandLogoHTML"></div>
 <div class="om-title" data-placeholder="popup5Title"></div>
 <div class="om-text" data-placeholder="popup5Text"></div>
-<input type="email" class="om-input om-spin-wheel-input" placeholder="Gib deine E-Mail-Adresse ein">
+<input type="email" class="om-input om-spin-wheel-input" placeholder="Add meg az e-mail címed">
 <button class="om-button om-spin-wheel-button" data-placeholder="popup5Button"></button>
-<button class="om-secondary-button" onclick="closeAllPopups()">Nein, ich zahle lieber den vollen Preis</button>
+<button class="om-secondary-button" onclick="closeAllPopups()">Nem, inkább teljes árat fizetek</button>
 </div>
 
 </div>
@@ -1594,6 +1747,18 @@ color: var(--color-primary);
 </svg>
 </div>
 
+<div class="tools-panel">
+        <label for="colorPicker">Brand Szín:</label>
+        <input type="color" id="colorPicker" value="#FF6B35" title="Brand szín váltása">
+        
+        <label for="editModeToggle">Szerkesztés:</label>
+        <button class="tools-panel-btn" id="editModeToggle" title="Szerkesztő mód be/ki">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+            </svg>
+        </button>
+    </div>
+
 
 <script>
 // =================================================================
@@ -1602,514 +1767,592 @@ color: var(--color-primary);
 
 // IDE ILLESZD BE AZ N8N KIMENETÉT
 const n8nData = {
-"Company": "ELTEN",
-"Industry": "divat és ruházat (ruha, cipő, kiegészítők)",
-"ConversionRate": "3.4%",
-"Platform": "UNAS",
-"TargetFeature1": "Sicherheitsschuhe",
-"TargetFeature2": "Handwerker und Industriearbeiter",
-"TargetFeature3": "Arbeitsschutz",
-"mainBrandColor": "#dc092f",
-"keyTrend": "Moderne Sicherheitsschuhe mit Komfort",
-"keyProducts": ["MADDOX BOA®","RENZO Mid ESD","SANDER XXT Pro"],
-"socialProof": "Seit 1910 - Made in Uedem",
-"scrapedLogoURL": "https://elten-store.de/media/7e/30/a3/1758796282/elten-logo.svg?ts=1758796282",
-"scrapedProductURL": "",
-"cleanImageUrls": ["","https://elten-store.de/thumbnail/5b/6a/ab/1739542093/Stiefel_High_400x400.png?ts=1739542093","https://elten-store.de/thumbnail/f0/e7/76/1739542092/Stiefel_400x400.png?ts=1739542093","https://elten-store.de/thumbnail/09/02/ca/1739542092/Halbschuh_400x400.png?ts=1739542093","https://elten-store.de/thumbnail/75/79/99/1739542093/Sandalen_400x400.png?ts=1739542093","https://elten-store.de/thumbnail/a2/82/0c/1739542093/CLogs_400x400.png?ts=1739542093","https://elten-store.de/media/63/73/c3/1738915257/products-SW6_elten-store_de-765841_0.jpg?ts=1762392652","https://elten-store.de/media/ba/c6/1a/1738915848/products-SW6_elten-store_de-769491_0.jpg?ts=1762392844","https://elten-store.de/media/4d/35/cd/1738915650/products-SW6_elten-store_de-769151_0.jpg?ts=1762392777","https://elten-store.de/media/65/8d/7e/1738915909/products-SW6_elten-store_de-720721_0.jpg?ts=1762392864"],
-"brandLogoHTML": "<img src=\"https://elten-store.de/media/7e/30/a3/1758796282/elten-logo.svg?ts=1758796282\" alt=\"ELTEN Logo\">",
-"pageTitle": "OptiMonk x ELTEN | Personalisierte Strategie",
-"analysisTitle": "ELTEN Sicherheitsschuhe: Potenzial für höhere Konversionen",
-"analysisText": "<p>Mit einer Konversionsrate von <strong>3,4%</strong> liegt ELTEN im Branchendurchschnitt für Schuhe und Bekleidung. Als etablierter Hersteller von Sicherheitsschuhen seit 1910 verfügt das Unternehmen über starke Grundlagen:</p><ul><li><strong>Vertrauen und Tradition:</strong> \"Made in Uedem\" seit über 100 Jahren schafft Glaubwürdigkeit</li><li><strong>Breites Produktsortiment:</strong> Von S1 bis S3 Sicherheitsklassen für alle Branchen</li><li><strong>Innovative Features:</strong> BOA® Fit System, Gore-Tex, Wellmaxx-Technologie</li></ul><p><strong>Ungenutzte Möglichkeiten:</strong> Die Website zeigt viele Produkte, aber es fehlen personalisierte Empfehlungen basierend auf Branche oder Sicherheitsanforderungen. Viele Besucher verlassen wahrscheinlich die Seite, weil sie von der Produktvielfalt überwältigt sind.</p><p><strong>Optimierungspotenzial:</strong> Durch gezielte Popups für verschiedene Branchen (Baugewerbe, Feuerwehr, Industrie) und Exit-Intent-Strategien könnte ELTEN die Konversionsrate deutlich über den Branchendurchschnitt steigern.</p>",
-"heroBadge": "Sicherheitsschuhe-Spezialist",
-"heroTitle": "ELTEN x OptiMonk",
-"heroSubtitle": "Steigern Sie den Verkauf von Sicherheitsschuhen durch personalisierte Empfehlungen und bauen Sie eine starke Community von Handwerkern und Industriearbeitern auf.",
-"heroDemoButton": "Demo für ELTEN ansehen",
-"problemsLabel": "Herausforderungen im Sicherheitsschuhe-Verkauf",
-"problemsTitle": "Kommen Ihnen diese Herausforderungen bekannt vor?",
-"problem1Title": "Besucher stöbern, kaufen aber nicht",
-"problem1Text": "Viele Handwerker schauen sich Sicherheitsschuhe an, zögern aber beim Kauf aufgrund der Preise oder Unsicherheit über die richtige Sicherheitsklasse.",
-"problem2Title": "Warenkörbe werden verlassen",
-"problem2Text": "Kunden legen Sicherheitsschuhe in den Warenkorb, verlassen aber die Seite ohne Kauf, oft wegen fehlender Größenberatung oder Unsicherheit.",
-"problem3Title": "Keine Kundenbindung aufgebaut",
-"problem3Text": "Es werden keine E-Mail-Adressen gesammelt, um Handwerker über neue Sicherheitsstandards oder Produktneuheiten zu informieren.",
-"problem1ModalDesc": "<h3>Das Kernproblem</h3>Besucher sind interessiert an Sicherheitsschuhen, aber die große Produktvielfalt und verschiedene Sicherheitsklassen überfordern sie. Sie verlassen die Seite ohne Kauf, weil sie unsicher sind, welcher Schuh für ihre Branche geeignet ist.<h3>Die OptiMonk-Lösung</h3>OptiMonk zeigt Exit-Intent-Popups mit branchenspezifischen Empfehlungen und Gutscheinen, um unentschlossene Besucher zu Käufern zu konvertieren.",
-"problem2ModalDesc": "<h3>Das Kernproblem</h3>Kunden legen Sicherheitsschuhe in den Warenkorb, verlassen aber die Seite aufgrund von Zweifeln über Passform, Größe oder Kompatibilität mit ihren Arbeitsanforderungen.<h3>Die OptiMonk-Lösung</h3>OptiMonk erkennt Warenkorbabbrüche und zeigt personalisierte Popups mit Größenberatung, Kundenbewertungen oder zeitlich begrenzten Rabatten, um den Kaufabschluss zu fördern.",
-"problem3ModalDesc": "<h3>Das Kernproblem</h3>Ohne E-Mail-Liste verpasst ELTEN die Chance, langfristige Beziehungen zu Handwerkern aufzubauen und sie über neue Sicherheitsstandards, Produktneuheiten oder Wartungstipps zu informieren.<h3>Die OptiMonk-Lösung</h3>OptiMonk erstellt attraktive Lead-Magneten wie Sicherheitsleitfäden oder VIP-Zugang zu neuen Produkten, um E-Mail-Adressen zu sammeln und eine Community aufzubauen.",
-"solutionsTitle": "Wie OptiMonk ELTEN hilft",
-"solutionsSubtitle": "Nutzen Sie die Tradition und das Vertrauen von ELTEN, um mehr Handwerker zu überzeugen und langfristige Kundenbeziehungen aufzubauen.",
-"solution1Title": "Exit-Intent für Zögernde",
-"solution1Text": "Rettet abwandernde Besucher mit branchenspezifischen Gutscheinen und Sicherheitsleitfäden.",
-"solution2Title": "Sofortige AOV-Steigerung",
-"solution2Text": "Empfiehlt passende Zubehörprodukte wie Einlegesohlen oder Pflegeprodukte zu den Sicherheitsschuhen.",
-"solution3Title": "Community-Aufbau (Lead Gen)",
-"solution3Text": "Sammelt E-Mail-Adressen durch VIP-Zugang zu neuen Sicherheitsstandards und Produktneuheiten.",
-"solution4Title": "Targeting nach Interesse",
-"solution4Text": "Zeigt unterschiedliche Angebote für Bauarbeiter, Feuerwehrleute oder Industriearbeiter basierend auf dem Browsing-Verhalten.",
-"solution5Title": "Gamifiziertes Erlebnis",
-"solution5Text": "Das Glücksrad erhöht die Interaktion und macht den Schuhkauf zu einem unterhaltsamen Erlebnis.",
-"solution6Title": "Dringlichkeit erzeugen",
-"solution6Text": "Countdown-Timer für begrenzte Angebote beschleunigen Kaufentscheidungen bei hochwertigen Sicherheitsschuhen.",
-"stat1Number": "3,4",
-"stat1Label": "Branchendurchschnitt Schuhe & Bekleidung",
-"ctaTitle": "Bereit, den Umsatz von ELTEN zu steigern?",
-"ctaSubtitle": "Starten Sie noch heute Ihre kostenlose Testversion und entdecken Sie, wie OptiMonk Ihre Sicherheitsschuhe-Verkäufe optimiert.",
-"popup1Title": "Warten Sie! Finden Sie den perfekten Sicherheitsschuh",
-"popup1Text": "Lassen Sie sich nicht von der Auswahl überwältigen. Erhalten Sie 10% Rabatt und unseren kostenlosen Branchenleitfäden für die richtige Schuhwahl.",
-"popup1Button": "Leitfaden & Rabatt sichern",
-"popup1Image": "",
-"popup2Title": "Komplettieren Sie Ihre Sicherheitsausrüstung",
-"popup2Text": "Zu Ihren MADDOX Sicherheitsschuhen empfehlen wir passende Einlegesohlen und Pflegeprodukte für maximalen Komfort und Langlebigkeit.",
-"popup2Products": "<div class=\"om-product\">ELTEN Einlegesohlen Wellmaxx</div><div class=\"om-product\">ELTEN Pflegeset für Arbeitsschuhe</div>",
-"popup2Button": "Komplett-Set in den Warenkorb",
-"popup2Image": "",
-"popup3Title": "Werden Sie ELTEN VIP-Mitglied",
-"popup3Subtitle": "Erhalten Sie exklusiven Zugang zu neuen Sicherheitsstandards, Produktneuheiten und Expertentipps für Ihren Arbeitsalltag.",
-"popup3Products": "<div class=\"om-product\">Frühzeitiger Zugang zu neuen Modellen</div><div class=\"om-product\">Kostenlose Sicherheitsleitfäden</div><div class=\"om-product\">Exklusive Mitgliederrabatte</div>",
-"popup3Button": "VIP-Mitglied werden",
-"popup3Image": "",
-"popup4Title": "Speziell für Bauarbeiter",
-"popup4Text": "Entdecken Sie unsere S3-Sicherheitsschuhe mit verstärkter Sohle und Zehenschutz - perfekt für die harten Anforderungen auf der Baustelle.",
-"popup4Button": "Bauarbeiter-Schuhe ansehen",
-"popup4Image": "",
-"popup5Title": "Drehen Sie das Glücksrad!",
-"popup5Text": "Gewinnen Sie bis zu 25% Rabatt auf Ihre ELTEN Sicherheitsschuhe. Jeder gewinnt - drehen Sie jetzt und sparen Sie!",
-"popup5Button": "Jetzt drehen!",
-"popup5NoThanks": "Nein, ich zahle lieber den vollen Preis",
-"popup5Image": "Please generate a realistic image of a \"Spin the Wheel\" popup, with a dark blue background on the left side where the wheel is located, and a white background on the right side for text and input fields. The wheel itself should use colors derived from #2C3E50 and a darker shade for alternating segments, similar to the provided image example. The text on the right side should be clear and professional.",
-"popup6Title": "Ihr Rabatt läuft bald ab!",
-"popup6Urgency": "<div class=\"om-timer\">14:59</div>",
-"popup6Text": "Ihr 10% Rabatt auf ELTEN Sicherheitsschuhe ist nur noch wenige Minuten gültig. Sichern Sie sich jetzt Ihre Arbeitsschuhe zum Sonderpreis!",
-"popup6Button": "Rabatt jetzt einlösen!",
-"popup6Image": ""
+  "Company": "Reflexshop",
+  "Industry": "játék, gyerek és baba (játékok, gyerekruha, babaholmi)",
+  "ConversionRate": "4%",
+  "Platform": "UNAS",
+  "TargetFeature1": "Prémium társasjátékok és Funko figurák",
+  "TargetFeature2": "Társasjáték rajongók, családok és gamer közösségek",
+  "TargetFeature3": "játék",
+  "mainBrandColor": "#E67E22",
+  "keyTrend": "Saját kiadású társasjátékok és díjnyertes játékok",
+  "keyProducts": ["Jekyll Premier","Ethnos 2. kiadás","Funko figurák"],
+  "socialProof": "25 éve a piacon, 100%-ban magyar tulajdon",
+  "scrapedLogoURL": "https://reflexshop.hu/shop_ordered/51636/pic/og-image.png",
+  "scrapedProductURL": "",
+  "cleanImageUrls": ["","https://reflexshop.hu/!common_design/custom/reflexshop.unas.hu/element/layout_hu_banner_start_big-1100_1_large.png?time=1761983904","https://reflexshop.hu/!common_design/custom/reflexshop.unas.hu/element/layout_hu_banner_start_big-1100_1_default.png?time=1761983904","https://reflexshop.hu/!common_design/custom/reflexshop.unas.hu/element/layout_hu_banner_start_big-1100_2_large.png?time=1761983904","https://reflexshop.hu/!common_design/custom/reflexshop.unas.hu/element/layout_hu_banner_start_big-1100_2_default.png?time=1761983904","https://reflexshop.hu/!common_design/custom/reflexshop.unas.hu/element/layout_hu_banner_start_big-1100_3_large.png?time=1761983904","https://reflexshop.hu/!common_design/custom/reflexshop.unas.hu/element/layout_hu_banner_start_big-1100_3_default.webp?time=1761983904","https://reflexshop.hu/!common_design/custom/reflexshop.unas.hu/element/layout_hu_banner_start_big-1100_4_large.png?time=1761983904","https://reflexshop.hu/!common_design/custom/reflexshop.unas.hu/element/layout_hu_banner_start_big-1100_4_default.webp?time=1761983904"],
+  "brandLogoHTML": "Reflexshop",
+  "pageTitle": "OptiMonk x Reflexshop | Személyre szabott stratégia",
+  "analysisTitle": "Reflexshop: 25 év tapasztalat, végtelen lehetőségek",
+  "analysisText": "A <strong>Reflexshop</strong> 4%-os konverziós aránya megegyezik a játék iparág átlagával, ami stabil alapot jelent, de jelentős növekedési potenciált rejt magában. <ul><li><strong>Erősségek:</strong> A 25 éves piaci jelenlét, saját kiadású társasjátékok, díjnyertes termékek és a Reflexshop Klubtagság rendszer mind erős bizalomépítő elemek. A gyors kiszállítás (akár 1 órán belül) és a videós tutoriálok egyedülálló versenyelőnyt jelentenek.</li><li><strong>Kiaknázatlan lehetőségek:</strong> A társasjáték közösség rendkívül elkötelezett, ami ideális terepet biztosít a listaépítéshez és közösségépítéshez. A prémium termékek (Funko figurák, UGEARS modellek) magasabb átlagos kosárértéket tesznek lehetővé célzott ajánlatokkal.</li><li><strong>OptiMonk potenciál:</strong> A játékos célközönség fogékony a gamifikált élményekre (szerencsekerék, kvízek), míg a családi vásárlók értékelik a személyre szabott ajánlásokat és a sürgősség keltését limitált kiadású termékek esetén.</li></ul>",
+  "heroBadge": "Társasjáték specialistáknak szabott stratégia",
+  "heroTitle": "Reflexshop x OptiMonk",
+  "heroSubtitle": "Növeld a társasjáték eladásaidat intelligens popup stratégiákkal és építsd fel a legaktívabb játékos közösséget Magyarországon.",
+  "heroDemoButton": "Nézd meg a Reflexshopra szabott demót",
+  "problemsLabel": "Társasjáték webshop kihívások",
+  "problemsTitle": "Ismerősek ezek a kihívások a játék világában?",
+  "problem1Title": "A látogatók böngésznek, de a prémium árak miatt haboznak",
+  "problem1Text": "A minőségi társasjátékok és Funko figurák ára sokakat elgondolkodtat, pedig tudják, hogy megéri a befektetés.",
+  "problem2Title": "Kosárelhagyás a Jekyll Premier és hasonló drága játékok esetén",
+  "problem2Text": "A vásárlók beteszik a kosárba a vágyott társasjátékot, de az utolsó pillanatban mégis elgondolják magukat.",
+  "problem3Title": "Nehéz elérni a társasjáték rajongókat és családokat",
+  "problem3Text": "A játékos közösség szoros, de nehéz megtalálni őket és hosszú távú kapcsolatot építeni velük.",
+  "problem1ModalDesc": "<h3>A probléma gyökere</h3><p>A társasjátékok világában a minőség és az ár között gyakran nehéz egyensúlyt találni. A látogatók tudják, hogy egy jó társasjáték évekig szolgálja a családot, de a magasabb ár miatt haboznak a vásárlással.</p><h3>Az OptiMonk megoldása</h3><p>Az OptiMonk exit-intent technológiája pontosan akkor lép akcióba, amikor a látogató távozni készül. Egy jól időzített kupon vagy ajánlat (pl. \"10% kedvezmény az első vásárlásra\") meggyőzheti őket a döntés meghozatalában.</p>",
+  "problem2ModalDesc": "<h3>A probléma gyökere</h3><p>A kosárelhagyás különösen fájdalmas a drágább termékek esetén, mint a Jekyll Premier vagy más prémium társasjátékok. A vásárlók beteszik a terméket, de az utolsó pillanatban mégis elgondolják magukat.</p><h3>Az OptiMonk megoldása</h3><p>Az OptiMonk kosárelhagyás-követő rendszere automatikusan felismeri, amikor valaki elhagyja a kosarat, és személyre szabott ajánlattal (pl. ingyenes szállítás, kiegészítő termék ajánlása) visszahívja őket.</p>",
+  "problem3ModalDesc": "<h3>A probléma gyökere</h3><p>A társasjáték közösség rendkívül elkötelezett, de nehéz megtalálni és hosszú távú kapcsolatot építeni velük. Sok potenciális vásárló elvész, mert nem tudnak róla, hogy új játékok érkeztek vagy akciók vannak.</p><h3>Az OptiMonk megoldása</h3><p>Az OptiMonk listaépítő kampányai (kvízek, VIP klub ajánlatok) segítenek felépíteni egy elkötelezett közösséget, akiknek rendszeresen küldhetsz híreket új játékokról és exkluzív ajánlatokról.</p>",
+  "solutionsTitle": "Hogyan segít az OptiMonk a Reflexshopnak",
+  "solutionsSubtitle": "25 év tapasztalat és modern technológia találkozása a maximális eredményért.",
+  "solution1Title": "Exit-intent a bizonytalanoknak",
+  "solution1Text": "Amikor a látogató távozni készül, egy jól időzített kupon vagy útmutató meggyőzheti a vásárlásról.",
+  "solution2Title": "Azonnali AOV növelés",
+  "solution2Text": "Intelligens termékajánlások a kosárba helyezéskor (pl. kiegészítő játékok, védőfóliák).",
+  "solution3Title": "Közösségépítés (Lead Gen)",
+  "solution3Text": "VIP klub és hírlevél feliratkozás gamifikált módszerekkel a hűséges játékos közösség építéséhez.",
+  "solution4Title": "Célzás érdeklődés szerint",
+  "solution4Text": "Más ajánlatok a családoknak (gyerekjátékok) és más a hardcore gamereknek (stratégiai játékok).",
+  "solution5Title": "Gamifikált Élmény",
+  "solution5Text": "Szerencsekerék és kvízek, amelyek tökéletesen illeszkednek a játékos mentalitáshoz.",
+  "solution6Title": "Sürgősség Keltése",
+  "solution6Text": "Visszaszámlálók limitált kiadású játékoknál és akciós termékek esetén.",
+  "step3Text": "Az OptiMonk zökkenőmentesen integrálható a Reflexshop UNAS rendszerével, néhány perc alatt beüzemelhető.",
+  "stat1Number": "4%",
+  "stat1Label": "Játék iparág átlagos konverziós aránya",
+  "ctaTitle": "Készen állsz növelni a Reflexshop bevételét?",
+  "ctaSubtitle": "Kezdd el 14 napos ingyenes próbaidőszakkal és nézd meg, hogyan növekednek a társasjáték eladásaid.",
+  "popup1Title": "Várj! 10% kedvezmény az első társasjáték vásárlásodra!",
+  "popup1Text": "Ne hagyd ki ezt a lehetőséget! Add meg az e-mail címed és szerezz 10% kedvezményt a teljes Reflexshop kínálatból.",
+  "popup1Button": "Kérem a kupont!",
+  "popup1Image": "https://reflexshop.hu/!common_design/custom/reflexshop.unas.hu/element/layout_hu_banner_start_big-1100_1_default.png?time=1761983904",
+  "popup2Title": "Szuper választás! Még valami a Jekyll Premier mellé?",
+  "popup2Text": "A Jekyll Premier rajongói gyakran kedvelik ezeket a játékokat is. Add hozzá most 15% kedvezménnyel!",
+  "popup2Products": "<div class=\"om-product\">Jekyll Premier kiegészítők</div><div class=\"om-product\">Horror témájú társasjátékok</div><div class=\"om-product\">Védőfóliák és tárolók</div>",
+  "popup2Button": "Hozzáadom a kosárhoz",
+  "popup2Image": "https://reflexshop.hu/!common_design/custom/reflexshop.unas.hu/element/layout_hu_banner_start_big-1100_2_default.png?time=1761983904",
+  "popup3Title": "Csatlakozz a Reflexshop VIP Klubjához!",
+  "popup3Subtitle": "Legyél az első, aki értesül az új játékokról és exkluzív akciókról!",
+  "popup3Products": "<div class=\"om-product\">Korai hozzáférés új játékokhoz</div><div class=\"om-product\">Exkluzív VIP kedvezmények</div><div class=\"om-product\">Ingyenes játékbemutatók és tutoriálok</div>",
+  "popup3Button": "Csatlakozom a klubhoz",
+  "popup3Image": "https://reflexshop.hu/!common_design/custom/reflexshop.unas.hu/element/layout_hu_banner_start_big-1100_3_default.webp?time=1761983904",
+  "popup4Title": "Látjuk, hogy a stratégiai játékok érdekelnek...",
+  "popup4Text": "Kifejezetten a hardcore gamereknek készítettünk egy exkluzív ajánlatot. Nézd meg a legújabb stratégiai játékainkat 20% kedvezménnyel!",
+  "popup4Button": "Megnézem az ajánlatot",
+  "popup4Image": "https://reflexshop.hu/!common_design/custom/reflexshop.unas.hu/element/layout_hu_banner_start_big-1100_4_default.webp?time=1761983904",
+  "popup5Title": "Pörgess és nyerj társasjáték kedvezményt!",
+  "popup5Text": "Add meg az e-mail címed, és pörgess egyet az exkluzív Reflexshop kedvezményekért! Minden pörgetés nyer valamit!",
+  "popup5Button": "Pörgetek!",
+  "popup5NoThanks": "Nem, inkább teljes áron vásárolok",
+  "popup6Title": "Siess, a Jekyll Premier kuponod lejár!",
+  "popup6Text": "Csak 15 perced maradt, hogy beváltsd a 10% kedvezményt a Jekyll Premier társasjátékra. Ne hagyd ki ezt a lehetőséget!",
+  "popup6Button": "Azonnal beváltom!",
+  "popup6Image": "https://reflexshop.hu/!common_design/custom/reflexshop.unas.hu/element/layout_hu_banner_start_big-1100_1_default.png?time=1761983904"
 };
 
 let currentPopupIndex = 1;
-const totalPopups = 6;
-let countdownInterval = null;
-
-let navButtons = null;
-let reveals = null;
-
-// Képkezelő állapotok
-let imageIndexes = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
-let imageFitStates = { 1: 'cover', 2: 'cover', 3: 'cover', 4: 'cover', 5: 'cover', 6: 'cover' };
-let imagePosStates = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
-const imagePositions = ['center', 'left', 'right']; // Csak ez a 3 pozíció
-
-// TÖRÖLVE: Drag-and-drop változók
-
-// =================================================================
-// === 2. FŐ INDÍTÓ FÜGGVÉNY (DOMContentLoaded) ===
-// =================================================================
-
-document.addEventListener("DOMContentLoaded", () => {
-
-navButtons = document.querySelectorAll('.om-nav-btn');
-reveals = document.querySelectorAll(".scroll-reveal");
-
-if (typeof n8nData === 'undefined' || !n8nData.Company) {
-console.error("n8nData nem található vagy üres!");
-document.body.innerHTML = "<h1 style='font-family: sans-serif; text-align: center; margin-top: 50px; color: red;'>Hiba: A személyre szabott adatok betöltése sikertelen.</h1><p style='font-family: sans-serif; text-align: center;'>Töltsd ki az n8nData objektumot a script tag-ben.</p>";
-return;
-}
-
-injectorFunction(n8nData);
-setupEventListeners();
-revealOnScroll();
-});
-
-// =================================================================
-// === 3. SEGÉDFÜGGVÉNYEK ===
-// =================================================================
-
-// --- TARTALOM BEILLESZTŐ ---
-function injectorFunction(data) {
-document.querySelectorAll('[data-placeholder]').forEach(el => {
-const key = el.getAttribute('data-placeholder');
-if (data[key] !== undefined && data[key] !== null) {
-if (el.tagName === 'IMG') {
-el.src = data[key];
-} else {
-if (key.endsWith('Desc') || key.endsWith('analysisText') || key.endsWith('Products') || key.endsWith('Urgency')) {
-el.innerHTML = formatGeneratedHtml(data[key]);
-} else {
-el.innerHTML = data[key];
-}
-}
-}
-});
-
-const titleEl = document.querySelector('title[data-placeholder="pageTitle"]');
-if (titleEl && data["pageTitle"]) {
-document.title = data["pageTitle"];
-}
-
-if (data.mainBrandColor && /^#([0-9A-F]{3}){1,2}$/i.test(data.mainBrandColor)) {
-let hex = data.mainBrandColor.substring(1);
-if (hex.length === 3) {
-hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-}
-const finalHex = '#' + hex;
-document.documentElement.style.setProperty('--color-primary', finalHex);
-
-const r = parseInt(hex.substring(0, 2), 16);
-const g = parseInt(hex.substring(2, 4), 16);
-const b = parseInt(hex.substring(4, 6), 16);
-document.documentElement.style.setProperty('--color-primary-rgb', `${r}, ${g}, ${b}`);
-} else {
-if (data.mainBrandColor && data.mainBrandColor !== "") {
-console.warn(`A 'mainBrandColor' (${data.mainBrandColor}) formátuma érvénytelen. Az alapértelmezett szín lesz használva.`);
-} else {
-console.warn("A 'mainBrandColor' hiányzik vagy üres. Az alapértelmezett szín lesz használva.");
-}
-}
-}
-
-// --- FORMÁZÓ ---
-function formatGeneratedHtml(text) {
-if (!text) return '';
-let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-html = html.replace(/\n/g, '<br>');
-return html;
-}
-
-// --- ESEMÉNYKEZELŐK BEÁLLÍTÁSA ---
-function setupEventListeners() {
-
-// Képcsere (⟳) gomb
-document.querySelectorAll('.om-image-swap-btn').forEach(button => {
-button.addEventListener('click', (e) => {
-e.preventDefault();
-const popupId = e.target.closest('.om-image-btn').getAttribute('data-popup-id');
-swapPopupImage(popupId);
-});
-});
-
-// Méretváltó (⛶) gomb
-document.querySelectorAll('.om-toggle-fit').forEach(button => {
-button.addEventListener('click', (e) => {
-e.preventDefault();
-const popupId = e.target.closest('.om-image-btn').getAttribute('data-popup-id');
-toggleImageFit(popupId);
-});
-});
-
-// 🚩 JAVÍTVA: Pozícióváltó (✥) gomb
-document.querySelectorAll('.om-cycle-pos').forEach(button => {
-button.addEventListener('click', (e) => {
-e.preventDefault();
-const popupId = e.target.closest('.om-image-btn').getAttribute('data-popup-id');
-cycleImagePosition(popupId);
-});
-});
-
-// 🚩 TÖRÖLVE: A "drag" (húzás) eseménykezelői el lettek távolítva
-
-// Probléma Modálok (kártyákra kattintás)
-document.querySelectorAll('.problem-card').forEach(card => {
-card.addEventListener('click', () => {
-const modalId = card.getAttribute('data-modal-target');
-showOmModal(modalId);
-});
-});
-
-// Megoldás Kártyák (kártyákra kattintás -> popup demó)
-document.querySelectorAll('.solution-card').forEach(card => {
-card.addEventListener('click', () => {
-const popupId = card.getAttribute('data-popup-target');
-if(popupId) {
-currentPopupIndex = parseInt(popupId, 10);
-hideNavButtons();
-showPopup(currentPopupIndex);
-}
-});
-});
-
-// Modál bezáró gombok (X és overlay)
-document.querySelectorAll('.om-modal-overlay, .om-modal-close').forEach(el => {
-el.addEventListener('click', () => {
-closeOmModals();
-});
-});
-
-// "Nézd meg a demót" gomb
-const demoButton = document.getElementById("demoButton");
-if (demoButton) {
-demoButton.addEventListener("click", (e) => {
-e.preventDefault();
-currentPopupIndex = 1;
-showNavButtons();
-showPopup(1);
-});
-}
-
-// Popup navigációs gombok (narancssárga nyilak)
-document.getElementById('prevBtn').addEventListener('click', () => navigatePopup(-1));
-document.getElementById('nextBtn').addEventListener('click', () => navigatePopup(1));
-
-// Popup overlay bezárás
-document.addEventListener('click', (e) => {
-if (e.target.classList.contains('om-overlay')) {
-closeAllPopups();
-}
-});
-
-// Billentyűzet (Escape és Nyilak)
-document.addEventListener('keydown', (e) => {
-const anyPopupOpen = document.querySelector('.om-campaign.active');
-const anyModalOpen = document.querySelector('.om-modal.active');
-
-if (anyPopupOpen) {
-if (e.key === 'ArrowLeft') navigatePopup(-1);
-if (e.key === 'ArrowRight') navigatePopup(1);
-if (e.key === 'Escape') closeAllPopups();
-}
-if (anyModalOpen) {
-if (e.key === 'Escape') closeOmModals();
-}
-});
-
-window.addEventListener("scroll", revealOnScroll);
-}
-
-// =================================================================
-// === MODÁL FUNKCIÓK (Probléma & Megoldás) ===
-// =================================================================
-function showOmModal(modalId) {
-const modal = document.getElementById(modalId);
-if (modal) {
-modal.style.display = 'flex';
-setTimeout(() => modal.classList.add('active'), 10);
-document.body.style.overflow = 'hidden';
-}
-}
-
-function closeOmModals() {
-document.querySelectorAll('.om-modal.active').forEach(modal => {
-modal.classList.remove('active');
-setTimeout(() => modal.style.display = 'none', 300);
-});
-if (!document.querySelector('.om-campaign.active')) {
-document.body.style.overflow = 'auto';
-}
-}
-
-// =================================================================
-// === KÉP MANIPULÁLÓ LOGIKA (JAVÍTVA) ===
-// =================================================================
-
-function swapPopupImage(popupId) {
-if (!n8nData || !n8nData.cleanImageUrls || !Array.isArray(n8nData.cleanImageUrls) || n8nData.cleanImageUrls.length === 0) {
-console.warn("Nincsenek elérhető képek a cseréhez.");
-return;
-}
-const imageList = n8nData.cleanImageUrls;
-
-imageIndexes[popupId]++;
-if (imageIndexes[popupId] >= imageList.length) {
-imageIndexes[popupId] = 0;
-}
-
-const newImageUrl = imageList[imageIndexes[popupId]];
-const imageElement = document.getElementById(`popupImage_${popupId}`);
-
-if (imageElement) {
-imageElement.src = newImageUrl;
-}
-}
-
-function toggleImageFit(popupId) {
-const imageElement = document.getElementById(`popupImage_${popupId}`);
-if (!imageElement) return;
-
-const currentState = imageFitStates[popupId];
-const newState = (currentState === 'cover') ? 'contain' : 'cover';
-
-imageElement.style.objectFit = newState;
-imageFitStates[popupId] = newState;
-
-const posButton = document.querySelector(`.om-cycle-pos[data-popup-id="${popupId}"]`);
-
-if (newState === 'contain') {
-imageElement.style.objectPosition = 'center';
-imagePosStates[popupId] = 0;
-if (posButton) posButton.style.opacity = '0.3';
-} else {
-if (posButton) posButton.style.opacity = '1';
-}
-}
-
-// A (✥) gomb funkciója: kattintásra váltogatja a kép pozícióját
-function cycleImagePosition(popupId) {
-const imageElement = document.getElementById(`popupImage_${popupId}`);
-if (!imageElement) return;
-
-if (imageFitStates[popupId] !== 'cover') {
-alert("A kép pozíciójának változtatása csak 'Kitöltés' (⛶) nézetben látható. Válts nézetet, majd próbáld újra.");
-return;
-}
-
-imagePosStates[popupId]++;
-if (imagePosStates[popupId] >= imagePositions.length) {
-imagePosStates[popupId] = 0;
-}
-
-const newPosition = imagePositions[imagePosStates[popupId]];
-imageElement.style.objectPosition = newPosition; // Beállítja a CSS 'object-position'-t
-}
-
-// 🚩 TÖRÖLVE: A "drag" (húzás) funkciók (startDrag, whileDrag, stopDrag) el lettek távolítva
-
-
-// =================================================================
-// === SZÁMLÁLÓ ÉS SCROLL ANIMÁCIÓK ===
-// =================================================================
-function animateCountUp(el) {
-const targetText = el.getAttribute('data-placeholder') === 'stat1Number' ? n8nData.stat1Number : el.textContent;
-if (!targetText) return;
-const target = parseFloat(targetText.replace(/[^0-9.,]/g, '').replace(',', '.'));
-if (isNaN(target)) return;
-
-const prefix = targetText.match(/^[^+0-9]*/)?.[0] || '';
-const suffix = targetText.match(/[^0-9.,]*$/)?.[0] || '';
-const decimals = (target.toString().split('.')[1] || '').length;
-const duration = 1500;
-let startTimestamp = null;
-
-function step(timestamp) {
-if (!startTimestamp) startTimestamp = timestamp;
-const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-const currentValue = progress * (2 - progress) * target;
-el.textContent = prefix + currentValue.toFixed(decimals) + suffix;
-if (progress < 1) {
-window.requestAnimationFrame(step);
-} else {
-el.textContent = targetText;
-}
-}
-el.textContent = prefix + (0).toFixed(decimals) + suffix;
-window.requestAnimationFrame(step);
-}
-
-const revealOnScroll = () => {
-if (!reveals) return;
-for (let el of reveals) {
-const rect = el.getBoundingClientRect();
-if (rect.top < window.innerHeight - 100 && !el.classList.contains('revealed')) {
-el.classList.add("revealed");
-if (el.classList.contains('stat-card') && !el.dataset.animated) {
-const numberEl = el.querySelector('.stat-number');
-if (numberEl) {
-animateCountUp(numberEl);
-el.dataset.animated = 'true';
-}
-}
-}
-}
-};
-
-// =================================================================
-// === OPTIMONK POPUP KEZELÉS (TISZTÍTVA) ===
-// =================================================================
-
-function showNavButtons() {
-if (!navButtons) return;
-navButtons.forEach(btn => {
-btn.style.display = 'flex';
-});
-}
-function hideNavButtons() {
-if (!navButtons) return;
-navButtons.forEach(btn => {
-btn.style.display = 'none';
-});
-}
-
-function showPopup(index) {
-stopCountdown();
-
-for (let i = 1; i <= totalPopups; i++) {
-const popup = document.getElementById(`popup${i}`);
-if (popup) {
-popup.classList.remove('active');
-popup.style.display = 'none';
-}
-}
-const activePopup = document.getElementById(`popup${index}`);
-if (activePopup) {
-activePopup.style.display = 'flex';
-setTimeout(() => {
-activePopup.classList.add('active');
-}, 10);
-}
-
-if (index === 6) {
-const timerDisplay = document.getElementById('popup6Timer');
-if (timerDisplay) {
-startCountdown(14 * 60 + 59, timerDisplay);
-}
-}
-
-if (!document.querySelector('.om-modal.active')) {
-document.body.style.overflow = 'hidden';
-}
-}
-
-function navigatePopup(direction) {
-stopCountdown();
-
-currentPopupIndex += direction;
-if (currentPopupIndex > totalPopups) {
-currentPopupIndex = 1;
-} else if (currentPopupIndex < 1) {
-currentPopupIndex = totalPopups;
-}
-showPopup(currentPopupIndex);
-}
-
-function closeAllPopups() {
-stopCountdown();
-for (let i = 1; i <= totalPopups; i++) {
-const popup = document.getElementById(`popup${i}`);
-if (popup) {
-popup.classList.remove('active');
-popup.style.display = 'none';
-}
-}
-hideNavButtons();
-if (!document.querySelector('.om-modal.active')) {
-document.body.style.overflow = 'auto';
-}
-}
-
-function startCountdown(durationInSeconds, displayElement) {
-clearInterval(countdownInterval);
-let timer = durationInSeconds;
-
-function updateDisplay() {
-const minutes = Math.floor(timer / 60);
-let seconds = timer % 60;
-seconds = seconds < 10 ? "0" + seconds : seconds;
-displayElement.textContent = `${minutes}:${seconds}`;
-}
-
-updateDisplay();
-timer--;
-
-countdownInterval = setInterval(() => {
-updateDisplay();
-if (--timer < 0) {
-timer = 0;
-clearInterval(countdownInterval);
-displayElement.textContent = "0:00";
-}
-}, 1000);
-}
-
-function stopCountdown() {
-clearInterval(countdownInterval);
-}
-
+    const totalPopups = 6;
+    let countdownInterval = null;
+    
+    let navButtons = null;
+    let reveals = null;
+
+    // Képkezelő állapotok
+    let imageIndexes = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+    let imageFitStates = { 1: 'cover', 2: 'cover', 3: 'cover', 4: 'cover', 5: 'cover', 6: 'cover' };
+    // 🚩 JAVÍTVA: Ez most már a pozíciót tárolja %-ban (0-100), 50% (közép) az alap
+    let imagePosStates = { 1: 50, 2: 50, 3: 50, 4: 50, 5: 50, 6: 50 }; 
+    
+    // =================================================================
+    // === 2. FŐ INDÍTÓ FÜGGVÉNY (DOMContentLoaded) ===
+    // =================================================================
+
+    document.addEventListener("DOMContentLoaded", () => {
+        
+        navButtons = document.querySelectorAll('.om-nav-btn');
+        reveals = document.querySelectorAll(".scroll-reveal");
+
+        if (typeof n8nData === 'undefined' || !n8nData.Company) {
+            console.error("n8nData nem található vagy üres!");
+            document.body.innerHTML = "<h1 style='font-family: sans-serif; text-align: center; margin-top: 50px; color: red;'>Hiba: A személyre szabott adatok betöltése sikertelen.</h1><p style='font-family: sans-serif; text-align: center;'>Töltsd ki az n8nData objektumot a script tag-ben.</p>";
+            return;
+        }
+
+        injectorFunction(n8nData);
+        setupEventListeners();
+        revealOnScroll();
+    });
+
+    // =================================================================
+    // === 3. SEGÉDFÜGGVÉNYEK ===
+    // =================================================================
+
+    // --- TARTALOM BEILLESZTŐ ---
+    function injectorFunction(data) {
+        document.querySelectorAll('[data-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-placeholder');
+            if (data[key] !== undefined && data[key] !== null) {
+                if (el.tagName === 'IMG') { 
+                    el.src = data[key];
+                } else { 
+                    if (key.endsWith('Desc') || key.endsWith('analysisText') || key.endsWith('Products') || key.endsWith('Urgency')) {
+                        el.innerHTML = formatGeneratedHtml(data[key]);
+                    } else {
+                        el.innerHTML = data[key];
+                    }
+                }
+            }
+        });
+        
+        const titleEl = document.querySelector('title[data-placeholder="pageTitle"]');
+        if (titleEl && data["pageTitle"]) {
+            document.title = data["pageTitle"];
+        }
+
+        setBrandColor(data.mainBrandColor || '#FF6B35'); 
+    }
+
+    // --- FORMÁZÓ ---
+    function formatGeneratedHtml(text) {
+        if (!text) return '';
+        let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/\n/g, '<br>');
+        return html;
+    }
+
+    // --- SZÍNBEÁLLÍTÓ FUNKCIÓ ---
+    function setBrandColor(hexColor) {
+        if (!hexColor || !/^#([0-9A-F]{3}){1,2}$/i.test(hexColor)) {
+            if (hexColor && hexColor !== "") {
+                console.warn(`A 'mainBrandColor' (${hexColor}) formátuma érvénytelen.`);
+            } else {
+                console.warn("A 'mainBrandColor' hiányzik vagy üres.");
+            }
+            hexColor = '#FF6B35'; 
+        }
+        
+        let hex = hexColor.substring(1); 
+        if (hex.length === 3) {
+            hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+        }
+        const finalHex = '#' + hex; 
+
+        document.documentElement.style.setProperty('--color-primary', finalHex);
+        const r = parseInt(hex.substring(0, 2), 16);
+        const g = parseInt(hex.substring(2, 4), 16);
+        const b = parseInt(hex.substring(4, 6), 16);
+        document.documentElement.style.setProperty('--color-primary-rgb', `${r}, ${g}, ${b}`);
+
+        const colorPicker = document.getElementById('colorPicker');
+        if (colorPicker) {
+            colorPicker.value = finalHex;
+        }
+    }
+    
+    // --- SZERKESZTŐ MÓD KAPCSOLÓ ---
+    function toggleEditMode() {
+        isEditMode = !isEditMode; 
+        
+        document.getElementById('editModeToggle').classList.toggle('active', isEditMode);
+        document.body.classList.toggle('edit-mode-active', isEditMode);
+
+        document.querySelectorAll('[data-placeholder]:not(img)').forEach(el => {
+            el.contentEditable = isEditMode;
+        });
+
+        if(isEditMode) {
+            console.log("Szerkesztő mód BEKAPCSOLVA.");
+        } else {
+            console.log("Szerkesztő mód KIKAPCSOLVA.");
+        }
+    }
+
+
+    // --- ESEMÉNYKEZELŐK BEÁLLÍTÁSA ---
+    function setupEventListeners() {
+        
+        // Színválasztó
+        const colorPicker = document.getElementById('colorPicker');
+        if (colorPicker) {
+            colorPicker.addEventListener('input', (e) => {
+                setBrandColor(e.target.value);
+            });
+        }
+        
+        // Szerkesztő mód gomb
+        const editModeButton = document.getElementById('editModeToggle');
+        if (editModeButton) {
+            editModeButton.addEventListener('click', toggleEditMode);
+        }
+        
+        // Titkos kód a panelhez (e, d, i, t, o, r)
+        const secretCode = ['e', 'd', 'i', 't', 'o', 'r'];
+        let secretCodePosition = 0;
+        document.addEventListener('keydown', (e) => {
+            const key = e.key.toLowerCase();
+            
+            if (document.activeElement.tagName.toLowerCase() !== 'input' && document.activeElement.contentEditable !== 'true') {
+                if (key === secretCode[secretCodePosition]) {
+                    secretCodePosition++;
+                    if (secretCodePosition === secretCode.length) {
+                        const panel = document.querySelector('.tools-panel');
+                        if (panel) {
+                            panel.classList.toggle('visible'); 
+                        }
+                        secretCodePosition = 0; 
+                    }
+                } else {
+                    secretCodePosition = (key === secretCode[0]) ? 1 : 0;
+                }
+            }
+        });
+
+        // Képcsere (⟳) gomb
+        document.querySelectorAll('.om-image-swap-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault(); 
+                const popupId = e.target.closest('.om-image-btn').getAttribute('data-popup-id');
+                swapPopupImage(popupId);
+            });
+        });
+
+        // Méretváltó (⛶) gomb
+        document.querySelectorAll('.om-toggle-fit').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault(); 
+                const popupId = e.target.closest('.om-image-btn').getAttribute('data-popup-id');
+                toggleImageFit(popupId);
+            });
+        });
+
+        // 🚩 JAVÍTVA: Új gombok a mozgatáshoz
+        document.querySelectorAll('.om-pan-left').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault(); 
+                const popupId = e.target.closest('.om-image-btn').getAttribute('data-popup-id');
+                panImage(popupId, -1); // -1 = balra
+            });
+        });
+
+        document.querySelectorAll('.om-pan-right').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault(); 
+                const popupId = e.target.closest('.om-image-btn').getAttribute('data-popup-id');
+                panImage(popupId, 1); // 1 = jobbra
+            });
+        });
+        
+        // Probléma Modálok
+        document.querySelectorAll('.problem-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const modalId = card.getAttribute('data-modal-target');
+                showOmModal(modalId);
+            });
+        });
+
+        // Megoldás Kártyák -> Popup demók
+        document.querySelectorAll('.solution-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const popupId = card.getAttribute('data-popup-target');
+                if(popupId) {
+                    currentPopupIndex = parseInt(popupId, 10); 
+                    hideNavButtons(); 
+                    showPopup(currentPopupIndex); 
+                }
+            });
+        });
+
+        // Modál bezárók
+        document.querySelectorAll('.om-modal-overlay, .om-modal-close').forEach(el => {
+            el.addEventListener('click', () => {
+                closeOmModals();
+            });
+        });
+
+         // "Nézd meg a demót" gomb
+        const demoButton = document.getElementById("demoButton");
+        if (demoButton) {
+             demoButton.addEventListener("click", (e) => {
+                 e.preventDefault();
+                 currentPopupIndex = 1;
+                 showNavButtons(); 
+                 showPopup(1);
+             });
+        }
+
+         // Popup navigációs nyilak
+        document.getElementById('prevBtn').addEventListener('click', () => navigatePopup(-1));
+        document.getElementById('nextBtn').addEventListener('click', () => navigatePopup(1));
+
+         // Popup overlay bezárás
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('om-overlay')) {
+                closeAllPopups();
+            }
+        });
+
+         // Billentyűzet (Escape és Nyilak)
+        document.addEventListener('keydown', (e) => {
+            const anyPopupOpen = document.querySelector('.om-campaign.active');
+            const anyModalOpen = document.querySelector('.om-modal.active');
+            
+            if (document.activeElement.contentEditable === 'true' && e.key !== 'Escape') {
+                return;
+            }
+
+            if (anyPopupOpen) {
+                if (e.key === 'ArrowLeft') navigatePopup(-1);
+                if (e.key === 'ArrowRight') navigatePopup(1);
+                if (e.key === 'Escape') closeAllPopups();
+            }
+            if (anyModalOpen) {
+                if (e.key === 'Escape') closeOmModals();
+            }
+        });
+        
+        window.addEventListener("scroll", revealOnScroll);
+    }
+
+    // =================================================================
+    // === MODÁL FUNKCIÓK ===
+    // =================================================================
+    function showOmModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeOmModals() {
+        document.querySelectorAll('.om-modal.active').forEach(modal => {
+            modal.classList.remove('active');
+            setTimeout(() => modal.style.display = 'none', 300);
+        });
+        if (!document.querySelector('.om-campaign.active')) {
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    // =================================================================
+    // === KÉP MANIPULÁLÓ LOGIKA (JAVÍTVA) ===
+    // =================================================================
+
+    function swapPopupImage(popupId) {
+        if (!n8nData || !n8nData.cleanImageUrls || !Array.isArray(n8nData.cleanImageUrls) || n8nData.cleanImageUrls.length === 0) {
+            console.warn("Nincsenek elérhető képek a cseréhez.");
+            return;
+        }
+        const imageList = n8nData.cleanImageUrls;
+        
+        imageIndexes[popupId]++;
+        if (imageIndexes[popupId] >= imageList.length) {
+            imageIndexes[popupId] = 0;
+        }
+
+        const newImageUrl = imageList[imageIndexes[popupId]];
+        const imageElement = document.getElementById(`popupImage_${popupId}`);
+        
+        if (imageElement) {
+            imageElement.src = newImageUrl;
+            imageElement.style.objectPosition = '50% center'; // Visszaállítjuk középre
+            imagePosStates[popupId] = 50; // Visszaállítjuk a pozíciót
+        }
+    }
+
+    function toggleImageFit(popupId) {
+        const imageElement = document.getElementById(`popupImage_${popupId}`);
+        if (!imageElement) return;
+
+        const currentState = imageFitStates[popupId];
+        const newState = (currentState === 'cover') ? 'contain' : 'cover';
+        
+        imageElement.style.objectFit = newState;
+        imageFitStates[popupId] = newState;
+
+        const panButtonLeft = document.querySelector(`.om-pan-left[data-popup-id="${popupId}"]`);
+        const panButtonRight = document.querySelector(`.om-pan-right[data-popup-id="${popupId}"]`);
+
+        if (newState === 'contain') {
+            imageElement.style.objectPosition = 'center';
+            imagePosStates[popupId] = 50; 
+            if (panButtonLeft) panButtonLeft.style.opacity = '0.3';
+            if (panButtonRight) panButtonRight.style.opacity = '0.3';
+        } else {
+            if (panButtonLeft) panButtonLeft.style.opacity = '1';
+            if (panButtonRight) panButtonRight.style.opacity = '1';
+        }
+    }
+
+    // 🚩 ÚJ: Képmozgatás gombokkal (pan)
+    function panImage(popupId, direction) {
+        const imageElement = document.getElementById(`popupImage_${popupId}`);
+        if (!imageElement) return;
+
+        if (imageFitStates[popupId] !== 'cover') {
+            alert("A kép mozgatása csak 'Kitöltés' (⛶) nézetben látható. Válts nézetet, majd próbáld újra.");
+            return;
+        }
+
+        const step = 10; // 10%-os lépés
+        let currentPos = imagePosStates[popupId];
+        let newPos = currentPos + (direction * step);
+
+        // Határok ellenőrzése (0% és 100% között)
+        if (newPos < 0) newPos = 0;
+        if (newPos > 100) newPos = 100;
+        
+        imagePosStates[popupId] = newPos;
+        imageElement.style.objectPosition = `${newPos}% center`;
+    }
+    
+    // =================================================================
+    // === SZÁMLÁLÓ ÉS SCROLL ANIMÁCIÓK ===
+    // =================================================================
+    function animateCountUp(el) {
+        const targetText = el.getAttribute('data-placeholder') === 'stat1Number' ? n8nData.stat1Number : el.textContent;
+        if (!targetText) return;
+        const target = parseFloat(targetText.replace(/[^0-9.,]/g, '').replace(',', '.'));
+        if (isNaN(target)) return; 
+        
+        const prefix = targetText.match(/^[^+0-9]*/)?.[0] || ''; 
+        const suffix = targetText.match(/[^0-9.,]*$/)?.[0] || ''; 
+        const decimals = (target.toString().split('.')[1] || '').length;
+        const duration = 1500; 
+        let startTimestamp = null;
+
+        function step(timestamp) {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const currentValue = progress * (2 - progress) * target;
+            el.textContent = prefix + currentValue.toFixed(decimals) + suffix;
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                el.textContent = targetText;
+            }
+        }
+        el.textContent = prefix + (0).toFixed(decimals) + suffix; 
+        window.requestAnimationFrame(step);
+    }
+    
+    const revealOnScroll = () => {
+        if (!reveals) return;
+        for (let el of reveals) {
+            const rect = el.getBoundingClientRect();
+            if (rect.top < window.innerHeight - 100 && !el.classList.contains('revealed')) {
+                el.classList.add("revealed");
+                if (el.classList.contains('stat-card') && !el.dataset.animated) {
+                    const numberEl = el.querySelector('.stat-number');
+                    if (numberEl) {
+                        animateCountUp(numberEl);
+                        el.dataset.animated = 'true'; 
+                    }
+                }
+            }
+        }
+    };
+    
+    // =================================================================
+    // === OPTIMONK POPUP KEZELÉS ===
+    // =================================================================
+
+    function showNavButtons() {
+        if (!navButtons) return;
+        navButtons.forEach(btn => {
+            btn.style.display = 'flex';
+        });
+    }
+    function hideNavButtons() {
+        if (!navButtons) return;
+        navButtons.forEach(btn => {
+            btn.style.display = 'none';
+        });
+    }
+
+    function showPopup(index) {
+        stopCountdown();
+
+        for (let i = 1; i <= totalPopups; i++) {
+            const popup = document.getElementById(`popup${i}`);
+            if (popup) {
+                popup.classList.remove('active');
+                popup.style.display = 'none';
+            }
+        }
+        const activePopup = document.getElementById(`popup${index}`);
+        if (activePopup) {
+            activePopup.style.display = 'flex';
+            setTimeout(() => {
+                activePopup.classList.add('active');
+            }, 10); 
+        }
+        
+        if (index === 6) {
+            const timerDisplay = document.getElementById('popup6Timer');
+            if (timerDisplay) {
+                startCountdown(14 * 60 + 59, timerDisplay);
+            }
+        }
+        
+        if (!document.querySelector('.om-modal.active')) {
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function navigatePopup(direction) {
+        stopCountdown();
+        
+        currentPopupIndex += direction;
+        if (currentPopupIndex > totalPopups) {
+            currentPopupIndex = 1;
+        } else if (currentPopupIndex < 1) {
+            currentPopupIndex = totalPopups;
+        }
+        showPopup(currentPopupIndex);
+    }
+
+    function closeAllPopups() {
+        stopCountdown();
+        for (let i = 1; i <= totalPopups; i++) {
+            const popup = document.getElementById(`popup${i}`);
+            if (popup) {
+                popup.classList.remove('active');
+                popup.style.display = 'none';
+            }
+        }
+        hideNavButtons();
+        if (!document.querySelector('.om-modal.active')) {
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    function startCountdown(durationInSeconds, displayElement) {
+        clearInterval(countdownInterval);
+        let timer = durationInSeconds;
+        
+        function updateDisplay() {
+            const minutes = Math.floor(timer / 60);
+            let seconds = timer % 60;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+            displayElement.textContent = `${minutes}:${seconds}`;
+        }
+        
+        updateDisplay();
+        timer--;
+
+        countdownInterval = setInterval(() => {
+            updateDisplay();
+            if (--timer < 0) {
+                timer = 0;
+                clearInterval(countdownInterval);
+                displayElement.textContent = "0:00";
+            }
+        }, 1000);
+    }
+
+    function stopCountdown() {
+        clearInterval(countdownInterval);
+    }
+    
 </script>
 </body>
 </html>
